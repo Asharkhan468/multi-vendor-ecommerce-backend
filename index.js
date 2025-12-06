@@ -74,8 +74,10 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoriesRoutes);
 
 // MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
