@@ -75,13 +75,10 @@ app.use("/api/categories", categoriesRoutes);
 
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000, // important for Vercel
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("MongoDB ERROR:", err.message));
+  .catch((err) => console.log(err));
+
 
 // ✅ Export app instead of app.listen() for Vercel
 module.exports = app;
