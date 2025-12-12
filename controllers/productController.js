@@ -29,7 +29,8 @@ exports.createProduct = async (req, res) => {
         description: newProduct.description,
         price: newProduct.price,
         category: newProduct.category,
-        image: newProduct.image, // properly returned as object
+        image: newProduct.image,
+        stock:newProduct.stock,
         createdAt: newProduct.createdAt,
       },
     });
