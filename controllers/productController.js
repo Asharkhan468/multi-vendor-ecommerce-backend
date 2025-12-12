@@ -7,7 +7,9 @@ exports.createProduct = async (req, res) => {
     const { title, description, price, category } = req.body;
 
     if (!req.file) {
-      return res.status(400).json({ success: false, message: "Image is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Image is required" });
     }
 
     const newProduct = await Product.create({
@@ -15,6 +17,7 @@ exports.createProduct = async (req, res) => {
       description,
       price,
       category,
+      stock,
       image: {
         url: req.file.path,
         public_id: req.file.filename,
@@ -30,7 +33,7 @@ exports.createProduct = async (req, res) => {
         price: newProduct.price,
         category: newProduct.category,
         image: newProduct.image,
-        stock:newProduct.stock,
+        stock: newProduct.stock,
         createdAt: newProduct.createdAt,
       },
     });
@@ -54,7 +57,10 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
 
     res.status(200).json({ success: true, product });
   } catch (error) {
@@ -66,7 +72,10 @@ exports.getProductById = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
 
     const { title, description, price, category } = req.body;
 
@@ -97,14 +106,19 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
 
     // Delete image from Cloudinary
     await cloudinary.uploader.destroy(product.image.public_id);
 
     await product.deleteOne();
 
-    res.status(200).json({ success: true, message: "Product deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
