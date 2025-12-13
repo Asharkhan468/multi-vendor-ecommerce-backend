@@ -24,6 +24,8 @@ exports.createProduct = async (req, res) => {
       },
     });
 
+    console.log(newProduct , "product from backend");
+
     res.status(201).json({
       success: true,
       product: {
@@ -36,6 +38,8 @@ exports.createProduct = async (req, res) => {
         stock: newProduct.stock,
         createdAt: newProduct.createdAt,
       },
+
+    
     });
   } catch (error) {
     console.log(error);
