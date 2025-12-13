@@ -18,10 +18,10 @@ exports.createProduct = async (req, res) => {
       price,
       category,
       stock,
-      // image: {
-      //   url: req.file.path,
-      //   public_id: req.file.filename,
-      // },
+      image: {
+        url: req.file.path,
+        public_id: req.file.filename,
+      },
     });
 
 
@@ -33,7 +33,7 @@ exports.createProduct = async (req, res) => {
         description: newProduct.description,
         price: newProduct.price,
         category: newProduct.category,
-        // image: newProduct.image,
+        image: newProduct.image,
         stock: newProduct.stock,
         createdAt: newProduct.createdAt,
       },
