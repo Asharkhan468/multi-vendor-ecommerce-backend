@@ -48,6 +48,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "pending",
     },
+     user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", 
+  },
   },
   { timestamps: true }
 );
