@@ -4,7 +4,7 @@ const cloudinary = require("../config/cloudinary");
 // Create Product
 exports.createProduct = async (req, res) => {
   try {
-    const { title, description, price, category , stock , createdBy } = req.body;
+    const { title, description, price, category , stock  } = req.body;
 
     if (!req.file) {
       return res
@@ -22,7 +22,7 @@ exports.createProduct = async (req, res) => {
         url: req.file.path,
         public_id: req.file.filename,
       },
-      createdBy
+      createdBy:req.user._id,
     });
 
 
