@@ -21,17 +21,46 @@ const createOrder = async (req, res) => {
       });
     }
 
+    // const productsWithVendor = await Promise.all(
+    //   products.map(async (p) => {
+    //     const product = await Product.findById(p._id); // ya p.productId agar aap frontend se ye bhej rahe hain
+    //     if (!product) throw new Error("Product not found");
+
+    //     return {
+    //       productId: product._id,
+    //       title: product.title,
+    //       price: product.price,
+    //       quantity: p.quantity, // frontend se quantity bhejna
+    //       vendor: product.createdBy, // vendor id set ho gaya
+    //     };
+    //   })
+    // );
+
+    // const order = await Order.create({
+    //   customer,
+    //   products: productsWithVendor,
+    //   paymentMethod,
+    //   shippingAmount,
+    //   totalAmount,
+    //   orderDate,
+    //   user: req.user._id,
+    // });
+
     const productsWithVendor = await Promise.all(
       products.map(async (p) => {
-        const product = await Product.findById(p._id); // ya p.productId agar aap frontend se ye bhej rahe hain
-        if (!product) throw new Error("Product not found");
+        if (!p.productId) throw new Error("ProductId is missing");
+
+        const product = await Product.findById(
+          mongoose.Types.ObjectId(p.productId)
+        );
+        if (!product) throw new Error(`Product not found: ${p.productId}`);
 
         return {
           productId: product._id,
           title: product.title,
           price: product.price,
-          quantity: p.quantity, // frontend se quantity bhejna
-          vendor: product.createdBy, // vendor id set ho gaya
+          quantity: p.quantity || 1,
+          vendor: product.createdBy,
         };
       })
     );
@@ -110,7 +139,6 @@ const getSellerOrders = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 module.exports = {
   createOrder,
