@@ -13,7 +13,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: true,
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -28,7 +28,7 @@ app.use("/api/auth", loginRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/order", orderRoutes);
-app.use("/api/auth" , logoutRoutes);
+app.use("/api/auth", logoutRoutes);
 
 // 🔥 MongoDB connection (safe for serverless)
 let isConnected = false;
