@@ -60,16 +60,41 @@ const createOrder = async (req, res) => {
   }
 };
 
-const getSellerOrders = async (vendorId) => {
-  try {
-    const orders = await Order.find({
-      "products.vendor": mongoose.Types.ObjectId(vendorId),
-    }).populate("products._id"); // optional, to get full product info
+// const getSellerOrders = async (vendorId) => {
+//   try {
+//     const orders = await Order.find({
+//       "products.vendor": mongoose.Types.ObjectId(vendorId),
+//     }).populate("products.productId"); // optional, to get full product info
 
-    // Now filter each order to include only the vendor's products
+//     // Now filter each order to include only the vendor's products
+//     const filteredOrders = orders.map((order) => {
+//       const vendorProducts = order.products.filter(
+//         (p) => p.vendor.toString() === vendorId
+//       );
+//       return {
+//         ...order.toObject(),
+//         products: vendorProducts,
+//       };
+//     });
+
+//     return filteredOrders;
+//   } catch (error) {
+//     console.error(error);
+//     return [];
+//   }
+// };
+
+const getSellerOrders = async (req, res) => {
+  try {
+    const vendorId = req.user._id;
+
+    const orders = await Order.find({
+      "products.vendor": vendorId,
+    }).populate("products.productId");
+
     const filteredOrders = orders.map((order) => {
       const vendorProducts = order.products.filter(
-        (p) => p.vendor.toString() === vendorId
+        (p) => p.vendor.toString() === vendorId.toString()
       );
       return {
         ...order.toObject(),
@@ -77,12 +102,15 @@ const getSellerOrders = async (vendorId) => {
       };
     });
 
-    return filteredOrders;
+    res.status(200).json({
+      success: true,
+      orders: filteredOrders,
+    });
   } catch (error) {
-    console.error(error);
-    return [];
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 module.exports = {
   createOrder,
