@@ -9,6 +9,7 @@ const createOrder = async (req, res) => {
       paymentMethod,
       shippingAmount,
       totalAmount,
+      vendor,
       orderDate,
     } = req.body;
 
@@ -20,14 +21,29 @@ const createOrder = async (req, res) => {
       });
     }
 
+    const productsWithVendor = await Promise.all(
+      products.map(async (p) => {
+        const product = await Product.findById(p._id); // ya p.productId agar aap frontend se ye bhej rahe hain
+        if (!product) throw new Error("Product not found");
+
+        return {
+          productId: product._id,
+          title: product.title,
+          price: product.price,
+          quantity: p.quantity, // frontend se quantity bhejna
+          vendor: product.createdBy, // vendor id set ho gaya
+        };
+      })
+    );
+
     const order = await Order.create({
       customer,
-      products,
+      products: productsWithVendor,
       paymentMethod,
       shippingAmount,
       totalAmount,
       orderDate,
-      user:req.user._id,
+      user: req.user._id,
     });
 
     res.status(201).json({
@@ -44,37 +60,29 @@ const createOrder = async (req, res) => {
   }
 };
 
-
-
-const getSellerOrders = async (req, res) => {
+const getSellerOrders = async (vendorId) => {
   try {
-    // find all orders
-    const orders = await Order.find()
-      .populate({
-        path: "products.productId",
-        model: "Product",
-        match: { createdBy: req.user._id }, // only seller's products
-      })
-      .populate("customer"); // optional: populate customer details
+    const orders = await Order.find({
+      "products.vendor": mongoose.Types.ObjectId(vendorId),
+    }).populate("products._id"); // optional, to get full product info
 
-    // remove orders that have no products of this seller
-    const sellerOrders = orders.filter(
-      (order) => order.products.length > 0
-    );
-
-    res.status(200).json({
-      success: true,
-      orders: sellerOrders,
+    // Now filter each order to include only the vendor's products
+    const filteredOrders = orders.map((order) => {
+      const vendorProducts = order.products.filter(
+        (p) => p.vendor.toString() === vendorId
+      );
+      return {
+        ...order.toObject(),
+        products: vendorProducts,
+      };
     });
+
+    return filteredOrders;
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch orders",
-      error: error.message,
-    });
+    console.error(error);
+    return [];
   }
 };
-
 
 module.exports = {
   createOrder,

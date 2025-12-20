@@ -20,6 +20,11 @@ const orderSchema = new mongoose.Schema(
         title: String,
         price: Number,
         quantity: Number,
+        vendor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User", 
+          required: true,
+        },
       },
     ],
 
@@ -48,10 +53,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "pending",
     },
-     user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User", 
-  },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );
