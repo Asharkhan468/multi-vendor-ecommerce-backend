@@ -5,6 +5,7 @@ const loginRoutes = require("./routes/loginRoute.js");
 const productRoutes = require("./routes/productsRoute.js");
 const categoriesRoutes = require("./routes/categoriesRoutes.js");
 const createOrder = require("./routes/orderRoutes.js");
+const logout =require("./routes/logoutRoute.js");
 const cors = require("cors");
 
 require("dotenv").config();
@@ -28,6 +29,7 @@ app.use("/api/auth", loginRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/order", createOrder);
+app.use("/api/auth" , logout)
 
 // MongoDB connection
 mongoose
