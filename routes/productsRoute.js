@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 
 // Routes
 router.post("/",  auth , parser.single("image"), productController.createProduct); // Create with image
-router.get("/", productController.getAllProducts);                          // Get all
+router.get("/", auth,  productController.getAllProducts);                          // Get all
 router.get("/:id", productController.getProductById);                       // Get single
 router.put("/:id", parser.single("image"), productController.updateProduct);// Update with optional image
 router.delete("/:id", productController.deleteProduct);                     // Delete

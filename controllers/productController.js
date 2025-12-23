@@ -45,22 +45,12 @@ exports.createProduct = async (req, res) => {
 };
 
 // Get all products
-// exports.getAllProducts = async (req, res) => {
-//   try {
-//     const products = await Product.find();
-//     res.status(200).json({ success: true, products });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({
       createdBy: req.user._id,
     });
-
-    console.log(req.user._id);
     res.status(200).json({ sucess: true, products });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
