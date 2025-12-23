@@ -4,7 +4,7 @@ const cloudinary = require("../config/cloudinary");
 // Create Product
 exports.createProduct = async (req, res) => {
   try {
-    const { title, description, price, category , stock  } = req.body;
+    const { title, description, price, category, stock } = req.body;
 
     if (!req.file) {
       return res
@@ -22,9 +22,8 @@ exports.createProduct = async (req, res) => {
         url: req.file.path,
         public_id: req.file.filename,
       },
-      createdBy:req.user._id,
+      createdBy: req.user._id,
     });
-
 
     res.status(201).json({
       success: true,
@@ -38,8 +37,6 @@ exports.createProduct = async (req, res) => {
         stock: newProduct.stock,
         createdAt: newProduct.createdAt,
       },
-
-    
     });
   } catch (error) {
     console.log(error);
@@ -48,10 +45,21 @@ exports.createProduct = async (req, res) => {
 };
 
 // Get all products
+// exports.getAllProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find();
+//     res.status(200).json({ success: true, products });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).json({ success: true, products });
+    const products = await Product.find({
+      createdBy: req.user._id,
+    });
+    res.status(200).json({ sucess: true, products });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
