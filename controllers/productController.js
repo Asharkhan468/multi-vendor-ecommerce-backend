@@ -46,37 +46,41 @@ exports.createProduct = async (req, res) => {
 
 // Get all products
 
-// exports.getAllProducts = async (req, res) => {
-//   try {
-//     const products = await Product.find({
-//       createdBy: req.user._id,
-//     });
-//     res.status(200).json({ sucess: true, products });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
-
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({
-      createdBy: req.user._id,
-      stock: { $gt: 0 }   // 👈 stock 0 se zyada ho
+      stock: { $gt: 0 },
     });
 
     res.status(200).json({
       success: true,
-      products
+      products,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
 
+exports.getVendorProducts = async (req, res) => {
+  try {
+    const products = await Product.find({
+      createdBy: req.user._id,
+    });
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Update Product
 exports.updateProduct = async (req, res) => {
@@ -87,7 +91,7 @@ exports.updateProduct = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Product not found" });
 
-    const { title, description, price, category , stock } = req.body;
+    const { title, description, price, category, stock } = req.body;
 
     let imageData = product.image;
 
