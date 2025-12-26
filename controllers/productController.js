@@ -66,7 +66,7 @@ exports.updateProduct = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Product not found" });
 
-    const { title, description, price, category } = req.body;
+    const { title, description, price, category , stock } = req.body;
 
     let imageData = product.image;
 
@@ -81,7 +81,7 @@ exports.updateProduct = async (req, res) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { title, description, price, category, image: imageData },
+      { title, description, price, category, stock, image: imageData },
       { new: true, runValidators: true }
     );
 
