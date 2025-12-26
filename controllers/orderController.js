@@ -108,11 +108,7 @@ const updateOrderStatus = async (req, res) => {
     const { status } = req.body;
 
     const allowedStatus = [
-      "pending",
-      "processing",
-      "shipped",
-      "completed",
-      "cancelled",
+     "Preparing", "Shipped", "Delivered"
     ];
 
     if (!allowedStatus.includes(status)) {
