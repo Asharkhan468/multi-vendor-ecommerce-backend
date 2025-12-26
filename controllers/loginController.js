@@ -2,7 +2,6 @@ const User = require("../models/User.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -37,8 +36,25 @@ exports.login = async (req, res) => {
         role: user.role,
       },
     });
-
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const customers = await User.find({ role: "customer" }).select("-password");
+    res.status(200).json({ success: true, customers });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getAllVendors = async (req, res) => {
+  try {
+    const vendors = await User.find({ role: "vendor" }).select("-password");
+    res.status(200).json({ success: true, vendors });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
