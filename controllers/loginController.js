@@ -41,20 +41,3 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.getAllCustomers = async (req, res) => {
-  try {
-    const customers = await User.find({ role: "customer" }).select("-password");
-    res.status(200).json({ success: true, customers });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-exports.getAllVendors = async (req, res) => {
-  try {
-    const vendors = await User.find({ role: "vendor" }).select("-password");
-    res.status(200).json({ success: true, vendors });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
