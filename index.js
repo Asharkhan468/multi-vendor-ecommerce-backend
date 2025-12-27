@@ -21,6 +21,7 @@ app.use(
 );
 
 app.use(express.json());
+app.options("*", cors());
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -42,6 +43,5 @@ const connectDB = async () => {
 };
 
 connectDB();
-
 
 module.exports = app;
