@@ -11,17 +11,25 @@ const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
+// app.use(
+//   cors({
+//     origin: ["http://localhost:3000"],
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   })
+// );
+
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: true,
     credentials: true,
   })
 );
 
-app.use(express.json());
 app.options("*", cors());
+
+app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
