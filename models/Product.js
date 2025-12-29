@@ -27,10 +27,16 @@ const productSchema = new mongoose.Schema(
       required: [true, "Stock is required"],
     },
     createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    profilePhoto: {
+      type: String,
+      default:
+        "https://firebasestorage.googleapis.com/v0/b/image-to-url-converter-9483c.appspot.com/o/test%40gmail.com%20%2B%201767014856794?alt=media&token=6337cf43-7e51-44cb-a5a9-05e9706afe1f",
+    },
   },
   { timestamps: true }
 );
