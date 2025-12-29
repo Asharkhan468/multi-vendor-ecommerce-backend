@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
     password: { type: String, required: [true, "Password is required"] },
+    status:{type:String , default:"active" },
     role: {
       type: String,
       enum: ["customer", "vendor", "admin"],
