@@ -12,6 +12,11 @@ const userSchema = new mongoose.Schema(
     },
     password: { type: String, required: [true, "Password is required"] },
     status:{type:String , default:"active" },
+    profilePhoto: {
+      type: String,
+      default:
+        "https://firebasestorage.googleapis.com/v0/b/image-to-url-converter-9483c.appspot.com/o/test%40gmail.com%20%2B%201767014856794?alt=media&token=6337cf43-7e51-44cb-a5a9-05e9706afe1f",
+    },
     role: {
       type: String,
       enum: ["customer", "vendor", "admin"],
