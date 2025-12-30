@@ -6,7 +6,7 @@ exports.blockUser = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(
       userId,
-      { status: "blocked" },
+      { status: "inactive" },
       { new: true }
     );
 
