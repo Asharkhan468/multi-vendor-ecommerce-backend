@@ -24,7 +24,7 @@ app.use(
 
 app.use(express.json());
 
-app.options("*", cors()); // ⭐ important
+app.options("*", cors()); 
 
 
 // Routes
