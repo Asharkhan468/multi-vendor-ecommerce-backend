@@ -9,6 +9,7 @@ const productRoutes = require("./routes/productsRoute");
 const categoriesRoutes = require("./routes/categoriesRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoute");
+const blockUser = require("./routes/accountBlockRoute")
 
 const app = express();
 
@@ -30,7 +31,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/auth", logoutRoutes);
-app.use("/api" , userRoutes)
+app.use("/api" , userRoutes);
+app.use("/api" , blockUser);
 
 // 🔥 MongoDB connection (safe for serverless)
 let isConnected = false;
