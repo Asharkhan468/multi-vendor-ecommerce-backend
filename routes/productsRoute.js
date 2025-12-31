@@ -5,6 +5,7 @@ const {
   getVendorProducts,
   updateProduct,
   deleteProduct,
+  getAllProducts,
 } = require("../controllers/productController");
 const parser = require("../config/multer");
 const auth = require("../middleware/auth");
