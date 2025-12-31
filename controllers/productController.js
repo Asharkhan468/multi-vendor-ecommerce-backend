@@ -2,7 +2,7 @@ const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
 // Create Product
-exports.createProduct = async (req, res) => {
+const createProduct = async (req, res) => {
   try {
     const { title, description, price, category, stock } = req.body;
 
@@ -45,7 +45,7 @@ exports.createProduct = async (req, res) => {
 };
 
 // Get all products
-exports.getAllProducts = async (req, res) => {
+const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find({
       stock: { $gt: 0 },
@@ -63,7 +63,7 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-exports.getVendorProducts = async (req, res) => {
+const getVendorProducts = async (req, res) => {
   try {
     const products = await Product.find({
       createdBy: req.user._id,
@@ -82,7 +82,7 @@ exports.getVendorProducts = async (req, res) => {
 };
 
 // Update Product
-exports.updateProduct = async (req, res) => {
+const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product)
@@ -116,7 +116,7 @@ exports.updateProduct = async (req, res) => {
 };
 
 // Delete Product
-exports.deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product)
@@ -136,3 +136,4 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+module.export = {createProduct , getAllProducts, getVendorProducts,updateProduct,deleteProduct};
