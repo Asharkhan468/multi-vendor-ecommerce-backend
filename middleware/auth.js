@@ -1,10 +1,7 @@
-
-
-
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-exports.auth = async (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
 
@@ -24,7 +21,6 @@ exports.auth = async (req, res, next) => {
         .json({ success: false, message: "User not found" });
     }
 
-  
     if (user.status === "inactive") {
       return res.status(403).json({
         success: false,
@@ -42,3 +38,5 @@ exports.auth = async (req, res, next) => {
     });
   }
 };
+
+module.exports = auth;

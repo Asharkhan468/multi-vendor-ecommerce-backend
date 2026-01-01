@@ -1,6 +1,6 @@
 const User = require("../models/User");
 
-exports.blockUser = async (req, res) => {
+const blockUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -28,3 +28,5 @@ exports.blockUser = async (req, res) => {
     });
   }
 };
+
+module.exports=blockUser;

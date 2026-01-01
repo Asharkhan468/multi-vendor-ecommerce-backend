@@ -9,7 +9,8 @@ const productRoutes = require("./routes/productsRoute");
 const categoriesRoutes = require("./routes/categoriesRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoute");
-const blockUser = require("./routes/accountBlockRoute")
+const blockUser = require("./routes/accountBlockRoutes");
+
 
 const app = express();
 
