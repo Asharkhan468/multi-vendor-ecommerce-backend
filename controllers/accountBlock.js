@@ -2,11 +2,11 @@ const User = require("../models/User");
 
 const blockUser = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { userId , status } = req.params;
 
     const user = await User.findByIdAndUpdate(
       userId,
-      { status: "inactive" },
+      { status },
       { new: true }
     );
 
