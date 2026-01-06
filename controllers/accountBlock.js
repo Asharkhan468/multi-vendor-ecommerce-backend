@@ -2,7 +2,8 @@ const User = require("../models/User");
 
 const blockUser = async (req, res) => {
   try {
-    const { userId , status } = req.params;
+    const { userId } = req.params;
+    const { status } = req.body;
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -18,7 +19,7 @@ const blockUser = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "User blocked successfully",
+      message: "User status updated successfully",
       user,
     });
   } catch (error) {
@@ -29,4 +30,4 @@ const blockUser = async (req, res) => {
   }
 };
 
-module.exports=blockUser;
+module.exports = blockUser;
