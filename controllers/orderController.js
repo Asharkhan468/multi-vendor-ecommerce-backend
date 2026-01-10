@@ -147,8 +147,31 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+
+const getAllOrders = async (req, res) => {
+  try {
+    // Sare orders fetch kar rahe hain
+    const orders = await Order.find()
+      .populate("products.productId") // Product details
+      .populate("user", "fullName email"); // User details
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
   createOrder,
   getSellerOrders,
   updateOrderStatus,
+  getAllOrders
 };
