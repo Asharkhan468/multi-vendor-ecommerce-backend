@@ -107,9 +107,7 @@ const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const allowedStatus = [
-     "Preparing", "Shipped", "Delivered"
-    ];
+    const allowedStatus = ["Preparing", "Shipped", "Delivered"];
 
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({
@@ -147,7 +145,6 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-
 const getAllOrders = async (req, res) => {
   try {
     // Sare orders fetch kar rahe hain
@@ -167,11 +164,36 @@ const getAllOrders = async (req, res) => {
   }
 };
 
+const getCurrentUserOrder = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const orders = await Order.find({ user: userId })
+      .populate("products.productId")
+      .populate("vendor", "fullName email");
 
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found for current user",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   createOrder,
   getSellerOrders,
   updateOrderStatus,
-  getAllOrders
+  getAllOrders,
+  getCurrentUserOrder,
 };
