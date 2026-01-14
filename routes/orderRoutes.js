@@ -5,7 +5,7 @@ const {
   getSellerOrders,
   updateOrderStatus,
   getAllOrders,
-  getCurrentUserOrder,
+  getUserOrders,
 } = require("../controllers/orderController");
 const auth = require("../middleware/auth");
 
@@ -14,10 +14,10 @@ router.post("/create", auth, createOrder);
 
 router.get("/seller", auth, getSellerOrders);
 
-router.get("/getCurrentUser" , auth , getCurrentUserOrder );
+router.get("/getCurrentUser", auth, getUserOrders);
 
-router.get("/allOrders" , auth , getAllOrders);
+router.get("/allOrders", auth, getAllOrders);
 
-router.put("/updateStatus/:id" , auth , updateOrderStatus);
+router.put("/updateStatus/:id", auth, updateOrderStatus);
 
 module.exports = router;
