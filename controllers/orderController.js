@@ -148,8 +148,8 @@ const updateOrderStatus = async (req, res) => {
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate("products.productId") 
-      .populate("user", "fullName email"); 
+      .populate("products.productId")
+      .populate("user", "fullName email");
 
     res.status(200).json({
       success: true,
@@ -165,11 +165,11 @@ const getAllOrders = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
   try {
-    const userId = req.user._id; 
+    const userId = req.user._id;
 
-    const orders = await Order.find({ user: userId }) 
-      .populate("products.productId") 
-      .populate("customer", "fullName email"); 
+    const orders = await Order.find({ user: userId })
+      .populate("products.productId")
+      .populate("vendor", "fullName email");
 
     res.status(200).json({
       success: true,
@@ -182,7 +182,6 @@ const getUserOrders = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   createOrder,
