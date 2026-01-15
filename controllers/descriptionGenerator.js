@@ -4,7 +4,7 @@ const imageToTextController = async (req, res) => {
       return res.status(400).json({ error: "Image is required" });
     }
 
-    const base64Image = req.file.buffer.toString("base64");
+    const imageUrl = req.file.path || req.file.url;
 
     const response = await fetch(
       "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
@@ -14,7 +14,7 @@ const imageToTextController = async (req, res) => {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ inputs: base64Image }),
+        body: JSON.stringify({ inputs: imageUrl }),
       }
     );
 
