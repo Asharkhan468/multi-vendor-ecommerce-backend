@@ -5,6 +5,6 @@ const { imageToText } = require("../controllers/descriptionGenerator");
 const router = express.Router();
 const upload = multer({ dest: "images/" });
 
-router.post("/image-to-text", upload.single("image"), imageToText);
+router.post("/imageToText", upload.single("image"), imageToText);
 
 module.exports = router;
