@@ -1,12 +1,16 @@
-const express = require("express");
+// const express = require("express");
+// const multer = require("multer");
+// const parser = require("../config/multer");
+// const { imageToText } = require("../controllers/descriptionGenerator"); 
+
+
+// const router = express.Router();
+
+// router.post("/imageToText", parser.single("image"), imageToText);
+
+// module.exports = router;
+
 const multer = require("multer");
-const parser = require("../config/multer");
-const { imageToText } = require("../controllers/descriptionGenerator"); 
+const upload = multer({ storage: multer.memoryStorage() });
 
-
-const router = express.Router();
-
-router.post("/imageToText", parser.single("image"), imageToText);
-
-module.exports = router;
-
+router.post("/image-to-text", upload.single("image"), imageToText);
