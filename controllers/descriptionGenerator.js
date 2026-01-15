@@ -1,14 +1,15 @@
 // controllers/descriptionGenerator.js
-import fetch from "node-fetch";
+const fetch = require("node-fetch"); // Node 22+ me optional, install if needed
 
-export const imageToTextController = async (req, res) => {
+// Controller function
+const imageToTextController = async (req, res) => {
   try {
     if (!req.file)
       return res.status(400).json({ success: false, error: "Image is required" });
 
-    // Cloudinary URL
+    // Cloudinary URL of uploaded image
     const imageUrl = req.file.path || req.file.url;
-    if (!imageUrl) return res.status(400).json({ error: "Cloudinary URL not found" });
+    if (!imageUrl) return res.status(400).json({ success: false, error: "Cloudinary URL not found" });
 
     // Hugging Face Router API call
     const response = await fetch("https://router.huggingface.co/inference", {
@@ -38,10 +39,12 @@ export const imageToTextController = async (req, res) => {
     return res.status(200).json({
       success: true,
       caption: data[0]?.generated_text || "No caption generated",
-      imageUrl, // returning Cloudinary URL if you want
+      imageUrl,
     });
   } catch (err) {
     console.error("HF ERROR:", err);
     return res.status(500).json({ success: false, error: "AI processing failed" });
   }
 };
+
+module.exports = { imageToTextController };
