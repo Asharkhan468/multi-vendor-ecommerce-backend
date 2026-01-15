@@ -1,13 +1,12 @@
 const imageToTextController = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "Image is required" });
-    }
+    if (!req.file) return res.status(400).json({ error: "Image is required" });
 
+    // Cloudinary URL
     const imageUrl = req.file.path || req.file.url;
 
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
+      "https://router.huggingface.co/models/Salesforce/blip-image-captioning-base",
       {
         method: "POST",
         headers: {
@@ -19,6 +18,7 @@ const imageToTextController = async (req, res) => {
     );
 
     const data = await response.json();
+    console.log("HF Router Response:", data);
 
     if (data.error) {
       return res.status(503).json({
@@ -37,4 +37,5 @@ const imageToTextController = async (req, res) => {
     return res.status(500).json({ error: "AI processing failed" });
   }
 };
+
 module.exports = { imageToTextController };
