@@ -1,4 +1,4 @@
-export const imageToText = async (req, res) => {
+export const imageToTextController = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Image is required" });
@@ -20,7 +20,6 @@ export const imageToText = async (req, res) => {
 
     const data = await response.json();
 
-    // 🔴 IMPORTANT: HF loading / error handling
     if (data.error) {
       return res.status(503).json({
         success: false,
@@ -29,12 +28,12 @@ export const imageToText = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       caption: data[0]?.generated_text || "No caption generated",
     });
   } catch (err) {
     console.error("HF ERROR:", err);
-    res.status(500).json({ error: "AI processing failed" });
+    return res.status(500).json({ error: "AI processing failed" });
   }
 };
