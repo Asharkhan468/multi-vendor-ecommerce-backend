@@ -11,6 +11,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoute");
 const blockUser = require("./routes/accountBlockRoutes");
 const deleteUser= require("./routes/deleteUserRoute");
+const aiContentGenerate= require("./routes/descriptionGeneratorRoutes");
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use("/api/auth", logoutRoutes);
 app.use("/api" , userRoutes);
 app.use("/api" , blockUser);
 app.use("/api/users" , deleteUser);
+app.use("/api" , aiContentGenerate);
 
 // 🔥 MongoDB connection (safe for serverless)
 let isConnected = false;
