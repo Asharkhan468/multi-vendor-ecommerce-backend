@@ -1,9 +1,10 @@
 const express = require("express");
-const parser = require("../config/multer.js");
-const { imageToText } = require("../controllers/descriptionGenerator.js");
+const multer = require("multer");
+const { imageToText } = require("../controllers/descriptionGenerator"); 
 
 const router = express.Router();
+const upload = multer({ dest: "images/" });
 
-router.post("/imageToText", parser.single("image"), imageToText);
+router.post("/image-to-text", upload.single("image"), imageToText);
 
 module.exports = router;
