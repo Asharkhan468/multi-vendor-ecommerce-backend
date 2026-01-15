@@ -11,7 +11,6 @@
 // module.exports = router;
 
 const express = require("express");
-const multer = require("multer");
 const parser = require("../config/multer"); // Cloudinary Multer setup
 
 const {
