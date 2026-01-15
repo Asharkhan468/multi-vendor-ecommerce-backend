@@ -6,12 +6,10 @@ export const imageToText = async (req, res) => {
       return res.status(400).json({ error: "Image is required" });
     }
 
-    // Cloudinary URL
-    const imageUrl = req.file.path; // CloudinaryStorage returns secure URL in path
+    const imageUrl = req.file.path; // Cloudinary URL
 
-    // Hugging Face accepts JSON with image URL
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
+      "https://router.huggingface.co/models/Salesforce/blip-image-captioning-base",
       {
         method: "POST",
         headers: {
@@ -23,7 +21,7 @@ export const imageToText = async (req, res) => {
     );
 
     const data = await response.json();
-    console.log("HuggingFace Response:", data);
+    console.log("HuggingFace Router Response:", data);
 
     if (!data || data.error) {
       return res.status(500).json({ error: data.error || "No AI response" });
