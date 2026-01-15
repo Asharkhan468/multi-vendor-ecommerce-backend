@@ -1,6 +1,6 @@
-const fs = require("fs");
+import fs from "fs";
 
-const imageToText = async (req, res) => {
+export const imageToText = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "Image is required" });
 
@@ -32,7 +32,3 @@ const imageToText = async (req, res) => {
 };
 
 
-
-
-
-module.exports = { imageToText };
