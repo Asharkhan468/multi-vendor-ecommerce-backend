@@ -6,10 +6,11 @@ export const imageToText = async (req, res) => {
       return res.status(400).json({ error: "Image is required" });
     }
 
-    // Image ko read karke Base64 string me convert karo
+    // Local image ko read karke Base64 string me convert kar do
     const imageBuffer = fs.readFileSync(req.file.path);
     const imageBase64 = imageBuffer.toString("base64");
 
+    // HF API call
     const response = await fetch(
       "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
       {
@@ -18,15 +19,18 @@ export const imageToText = async (req, res) => {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ inputs: `data:image/jpeg;base64,${imageBase64}` }),
+        body: JSON.stringify({
+          inputs: `data:image/jpeg;base64,${imageBase64}`, // yahi important hai
+        }),
       }
     );
 
     const data = await response.json();
     console.log("HuggingFace Response:", data);
 
+    // Error handling
     if (!data || data.error) {
-      return res.status(500).json({ error: data.error || "No AI response" });
+      return res.status(500).json({ error: data.error || "AI response failed" });
     }
 
     const caption = data[0]?.generated_text || "No description generated";
@@ -36,7 +40,6 @@ export const imageToText = async (req, res) => {
       title: caption.split(" ").slice(0, 4).join(" "),
       description: caption,
     });
-
   } catch (error) {
     console.error("AI Error:", error);
     res.status(500).json({ error: "AI processing failed" });
