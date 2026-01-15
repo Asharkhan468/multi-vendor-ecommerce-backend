@@ -9,3 +9,4 @@ const router = express.Router();
 router.post("/imageToText", parser.single("image"), imageToText);
 
 module.exports = router;
+
