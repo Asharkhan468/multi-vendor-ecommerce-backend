@@ -2,8 +2,10 @@ const imageToTextController = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "Image is required" });
 
-    // Cloudinary URL
+    // Cloudinary uploaded URL
     const imageUrl = req.file.path || req.file.url;
+    if (!imageUrl)
+      return res.status(400).json({ error: "Cloudinary URL not found" });
 
     const response = await fetch(
       "https://router.huggingface.co/models/Salesforce/blip-image-captioning-base",
@@ -13,12 +15,15 @@ const imageToTextController = async (req, res) => {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ inputs: imageUrl }),
+        body: JSON.stringify({
+          inputs: imageUrl,
+          options: { wait_for_model: true },
+        }),
       }
     );
 
     const data = await response.json();
-    console.log("HF Router Response:", data);
+    console.log("HF Router Response:", data); // Debug
 
     if (data.error) {
       return res.status(503).json({
