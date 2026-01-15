@@ -31,4 +31,8 @@ const imageToText = async (req, res) => {
   }
 };
 
+
+
+
+
 module.exports = { imageToText };
