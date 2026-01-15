@@ -1,8 +1,8 @@
-import fs from "fs";
-
 export const imageToText = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "Image is required" });
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
+    }
 
     const base64Image = req.file.buffer.toString("base64");
 
@@ -19,11 +19,22 @@ export const imageToText = async (req, res) => {
     );
 
     const data = await response.json();
-    const caption = data[0]?.generated_text || "No caption generated";
 
-    res.status(200).json({ success: true, caption });
+    // 🔴 IMPORTANT: HF loading / error handling
+    if (data.error) {
+      return res.status(503).json({
+        success: false,
+        message: data.error,
+        wait: data.estimated_time || 10,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      caption: data[0]?.generated_text || "No caption generated",
+    });
   } catch (err) {
-    console.error(err);
+    console.error("HF ERROR:", err);
     res.status(500).json({ error: "AI processing failed" });
   }
 };
