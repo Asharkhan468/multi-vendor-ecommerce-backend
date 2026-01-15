@@ -14,3 +14,5 @@ const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/image-to-text", upload.single("image"), imageToText);
+
+module.exports = router;
