@@ -49,45 +49,33 @@
 
 // module.exports = { imageToTextController };
 
+import { InferenceClient } from "@huggingface/inference";
+import fs from "fs";
 
-const imageToTextController = async (req, res) => {
+// Hugging Face client
+const client = new InferenceClient(process.env.HF_API_KEY);
+
+export const imageToTextController = async (req, res) => {
   try {
-    if (!req.file?.path) {
-      return res.status(400).json({ error: "Image upload failed" });
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
     }
 
-    // 1️⃣ Download image from Cloudinary
-    const imgRes = await fetch(req.file.path);
-    const buffer = Buffer.from(await imgRes.arrayBuffer());
+    // Cloudinary / Multer upload se buffer le rahe hain
+    const imageBuffer = req.file.buffer;
 
-    // 2️⃣ HuggingFace request
-    const hfRes = await fetch(
-      "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "image/jpeg",
-          "x-wait-for-model": "true", // 🔥 MOST IMPORTANT
-        },
-        body: buffer,
-      }
-    );
+    // BLIP model se caption generate
+    const result = await client.imageToText({
+      model: "Salesforce/blip-image-captioning-base",
+      inputs: imageBuffer,
+    });
 
-    const data = await hfRes.json();
-
-    if (!hfRes.ok) {
-      console.log("HF ERROR 👉", data);
-      return res.status(500).json({ error: data });
-    }
-
+    // result array me hota hai generated_text
     res.status(200).json({
-      caption: data[0]?.generated_text,
+      caption: result[0].generated_text,
     });
   } catch (error) {
-    console.error("SERVER ERROR 👉", error);
+    console.error("HF API ERROR:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
-module.exports = { imageToTextController };
