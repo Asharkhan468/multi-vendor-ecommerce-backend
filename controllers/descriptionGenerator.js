@@ -51,44 +51,36 @@
 
 
 
+import Replicate from "replicate";
 
-// Controller function
- const imageToTextController = async (req, res) => {
+// Init Replicate client
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN,
+});
+
+// Multer buffer -> upload -> Replicate -> caption
+export const imageToTextController = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "Image is required" });
-    }
+    if (!req.file) return res.status(400).json({ error: "Image is required" });
 
-    const imageBuffer = req.file.buffer;
+    // Replicate accepts image URL or base64 via data URL
+    const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
 
-    // HF REST API call (Direct, bypass SDK)
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
+    // Run the BLIP model
+    const output = await replicate.run(
+      "salesforce/blip:2e1dddc8621f72155f24cf2e0adbde548458d3cab9f00c0139eea840d0ac4746",
       {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "image/jpeg",
-          "x-wait-for-model": "true", // cold start handle
-        },
-        body: imageBuffer, // direct binary
+        input: {
+          task: "image_captioning",
+          image: base64Image
+        }
       }
     );
 
-    // Parse JSON
-    const data = await response.json();
-
-    // HF Error handling
-    if (data.error) {
-      return res.status(500).json({ error: data.error });
-    }
-
     // Send generated caption
-    res.status(200).json({ caption: data[0].generated_text });
+    res.status(200).json({ caption: output });
   } catch (error) {
-    console.error("HF API ERROR:", error);
+    console.error("Error:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
-module.exports={imageToTextController}
