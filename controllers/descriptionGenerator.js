@@ -4,11 +4,15 @@ dotenv.config();
 const imageToTextController = async (req, res) => {
   try {
     if (!req.file)
-      return res.status(400).json({ success: false, error: "Image is required" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Image is required" });
 
     const imageUrl = req.file.path || req.file.url;
     if (!imageUrl)
-      return res.status(400).json({ success: false, error: "Cloudinary URL not found" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Cloudinary URL not found" });
 
     const response = await fetch(
       "https://router.huggingface.co/models/Salesforce/blip-image-captioning-base",
@@ -25,15 +29,15 @@ const imageToTextController = async (req, res) => {
       }
     );
 
-    // If Hugging Face returns a non-JSON response, catch it
+    // Read the body once
     let data;
+    const text = await response.text(); // read as text first
     try {
-      data = await response.json();
-    } catch {
-      const text = await response.text();
+      data = JSON.parse(text); // try to parse JSON
+    } catch (err) {
       return res.status(response.status).json({
         success: false,
-        error: text,
+        error: `HF response not JSON: ${text}`,
       });
     }
 
