@@ -58,13 +58,14 @@ const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
-// Multer buffer -> upload -> Replicate -> caption
 export const imageToTextController = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "Image is required" });
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
+    }
 
-    // Replicate accepts image URL or base64 via data URL
-    const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+    // Cloudinary URL mil rahi hai
+    const imageUrl = req.file.path || req.file.secure_url;
 
     // Run the BLIP model
     const output = await replicate.run(
@@ -72,8 +73,8 @@ export const imageToTextController = async (req, res) => {
       {
         input: {
           task: "image_captioning",
-          image: base64Image
-        }
+          image: imageUrl,  // Cloudinary URL use karo
+        },
       }
     );
 
