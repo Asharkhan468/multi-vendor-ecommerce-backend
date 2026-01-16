@@ -83,9 +83,12 @@ const imageToTextController = async (req, res) => {
       caption: data[0]?.generated_text,
     });
   } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Server error" });
-  }
+  console.error("FULL ERROR 👉", error);
+  res.status(500).json({
+    error: error.message || error,
+  });
+}
+
 };
 
 module.exports = { imageToTextController };
