@@ -1,65 +1,35 @@
-const dotenv = require("dotenv");
-dotenv.config();
+import { pipeline } from "@xenova/transformers";
+import fs from "fs";
 
-const imageToTextController = async (req, res) => {
-  try {
-    if (!req.file)
-      return res
-        .status(400)
-        .json({ success: false, error: "Image is required" });
+let captioner;
 
-    const imageUrl = req.file.path || req.file.url;
-    if (!imageUrl)
-      return res
-        .status(400)
-        .json({ success: false, error: "Cloudinary URL not found" });
-
-    const response = await fetch(
-      "https://router.huggingface.co/models/Salesforce/blip-image-captioning-base",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: imageUrl,
-          options: { wait_for_model: true },
-        }),
-      }
+async function loadModel() {
+  if (!captioner) {
+    captioner = await pipeline(
+      "image-to-text",
+      "Xenova/vit-gpt2-image-captioning"
     );
+  }
+}
 
-    // Read the body once
-    let data;
-    const text = await response.text(); // read as text first
-    try {
-      data = JSON.parse(text); // try to parse JSON
-    } catch (err) {
-      return res.status(response.status).json({
-        success: false,
-        error: `HF response not JSON: ${text}`,
-      });
+export const imageToTextController = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Image required" });
     }
 
-    console.log("HF Response:", data);
+    await loadModel();
 
-    if (data.error) {
-      return res.status(503).json({
-        success: false,
-        message: data.error,
-        wait: data.estimated_time || 10,
-      });
-    }
+    const imageBuffer = fs.readFileSync(req.file.path);
 
-    return res.status(200).json({
+    const result = await captioner(imageBuffer);
+
+    res.json({
       success: true,
-      caption: data[0]?.generated_text || "No caption generated",
-      imageUrl,
+      caption: result[0].generated_text,
     });
-  } catch (err) {
-    console.error("HF ERROR:", err);
-    return res.status(500).json({ success: false, error: err.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "AI failed" });
   }
 };
-
-module.exports = { imageToTextController };
