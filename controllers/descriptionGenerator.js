@@ -50,7 +50,7 @@ const imageToTextController = async (req, res) => {
     console.error("HF ERROR:", err);
     return res
       .status(500)
-      .json({ success: false, error: "AI processing failed" });
+      .json({ success: false, error:err });
   }
 };
 
