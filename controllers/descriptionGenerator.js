@@ -49,11 +49,6 @@
 
 // module.exports = { imageToTextController };
 
-
-
-
-
-
 const imageToTextController = async (req, res) => {
   try {
     if (!req.file?.path) {
@@ -88,8 +83,12 @@ const imageToTextController = async (req, res) => {
       caption: data[0]?.generated_text,
     });
   } catch (error) {
-    console.error("REAL ERROR 👉", error);
-    res.status(500).json({ error: error.message });
+    const text = await hfResponse.text();
+    console.log("RAW RESPONSE 👉", text);
+
+    return res.status(500).json({
+      raw: text,
+    });
   }
 };
 
