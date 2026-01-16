@@ -51,50 +51,42 @@
 
 
 
-const fetch = require("node-fetch"); // Node 22+ me optional, install if needed
 
 
+const fetch = require("node-fetch");
 
-// Controller function
- const imageToTextController = async (req, res) => {
+const imageToTextController = async (req, res) => {
   try {
-    // Check if image exists
     if (!req.file) {
       return res.status(400).json({ error: "Image is required" });
     }
 
-    // Convert image to base64
-    const base64Image = req.file.buffer.toString("base64");
-
-    // Call Hugging Face BLIP model
     const response = await fetch(
       "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "application/json",
+          "Content-Type": req.file.mimetype, // 🔴 IMPORTANT
         },
-        body: JSON.stringify({
-          inputs: `data:image/jpeg;base64,${base64Image}`,
-        }),
+        body: req.file.buffer, // 🔴 IMPORTANT
       }
     );
 
     const data = await response.json();
 
-    // Handle API errors
-    if (data.error) {
-      return res.status(500).json({ error: data.error });
+    if (!response.ok) {
+      console.log("HF Error:", data);
+      return res.status(500).json({ error: data });
     }
 
-    // Send generated caption
-    res.status(200).json({ caption: data[0].generated_text });
+    res.status(200).json({
+      caption: data[0]?.generated_text,
+    });
   } catch (error) {
-    console.error("Error in imageToTextController:", error);
+    console.error("Controller Error:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-
-module.exports={imageToTextController}
+module.exports = { imageToTextController };
