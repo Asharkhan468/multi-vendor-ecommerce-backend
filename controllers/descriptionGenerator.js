@@ -53,7 +53,6 @@
 
 
 
-const fetch = require("node-fetch");
 
 const imageToTextController = async (req, res) => {
   try {
