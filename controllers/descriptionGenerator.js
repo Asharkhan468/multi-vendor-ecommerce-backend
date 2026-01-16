@@ -50,50 +50,42 @@
 // module.exports = { imageToTextController };
 
 
-
-
-
 const imageToTextController = async (req, res) => {
   try {
-    console.log("🔥 Controller hit");
-
-    if (!req.file || !req.file.path) {
+    if (!req.file?.path) {
       return res.status(400).json({ error: "Image upload failed" });
     }
 
-    // 1️⃣ Download image from Cloudinary URL
+    // 1️⃣ Download image from Cloudinary
     const imgRes = await fetch(req.file.path);
-    const arrayBuffer = await imgRes.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer = Buffer.from(await imgRes.arrayBuffer());
 
-    // 2️⃣ Send to HuggingFace (RAW IMAGE)
+    // 2️⃣ HuggingFace request
     const hfRes = await fetch(
       "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "image/jpeg", // 🔥 HARDCODE
+          "Content-Type": "image/jpeg",
+          "x-wait-for-model": "true", // 🔥 MOST IMPORTANT
         },
         body: buffer,
       }
     );
 
-    const contentType = hfRes.headers.get("content-type");
-
-    if (!contentType || !contentType.includes("application/json")) {
-      const html = await hfRes.text();
-      console.log("❌ NON JSON HF RESPONSE:", html);
-      return res.status(500).json({ error: "Invalid HF response" });
-    }
-
     const data = await hfRes.json();
+
+    if (!hfRes.ok) {
+      console.log("HF ERROR 👉", data);
+      return res.status(500).json({ error: data });
+    }
 
     res.status(200).json({
       caption: data[0]?.generated_text,
     });
   } catch (error) {
-    console.error("💥 SERVER CRASH:", error);
+    console.error("SERVER ERROR 👉", error);
     res.status(500).json({ error: error.message });
   }
 };
