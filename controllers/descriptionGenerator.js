@@ -49,46 +49,52 @@
 
 // module.exports = { imageToTextController };
 
+
+
+
+
 const imageToTextController = async (req, res) => {
   try {
-    if (!req.file?.path) {
+    console.log("🔥 Controller hit");
+
+    if (!req.file || !req.file.path) {
       return res.status(400).json({ error: "Image upload failed" });
     }
 
-    // 1️⃣ Download image from Cloudinary
-    const imgResponse = await fetch(req.file.path);
-    const imageBuffer = await imgResponse.arrayBuffer();
+    // 1️⃣ Download image from Cloudinary URL
+    const imgRes = await fetch(req.file.path);
+    const arrayBuffer = await imgRes.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    // 2️⃣ Send raw image to HuggingFace
-    const hfResponse = await fetch(
+    // 2️⃣ Send to HuggingFace (RAW IMAGE)
+    const hfRes = await fetch(
       "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": req.file.mimetype,
+          "Content-Type": "image/jpeg", // 🔥 HARDCODE
         },
-        body: Buffer.from(imageBuffer),
+        body: buffer,
       }
     );
 
-    const data = await hfResponse.json();
+    const contentType = hfRes.headers.get("content-type");
 
-    if (!hfResponse.ok) {
-      console.log("HF ERROR 👉", data);
-      return res.status(500).json({ error: data });
+    if (!contentType || !contentType.includes("application/json")) {
+      const html = await hfRes.text();
+      console.log("❌ NON JSON HF RESPONSE:", html);
+      return res.status(500).json({ error: "Invalid HF response" });
     }
+
+    const data = await hfRes.json();
 
     res.status(200).json({
       caption: data[0]?.generated_text,
     });
   } catch (error) {
-    const text = await hfResponse.text();
-    console.log("RAW RESPONSE 👉", text);
-
-    return res.status(500).json({
-      raw: text,
-    });
+    console.error("💥 SERVER CRASH:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
