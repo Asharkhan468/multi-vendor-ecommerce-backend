@@ -51,10 +51,9 @@
 
 
 
-import fetch from "node-fetch";
 
 // Controller function
-export const imageToTextController = async (req, res) => {
+ const imageToTextController = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Image is required" });
@@ -91,3 +90,5 @@ export const imageToTextController = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+module.exports={imageToTextController}
