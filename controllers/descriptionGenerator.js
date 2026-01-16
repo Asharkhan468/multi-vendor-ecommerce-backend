@@ -52,6 +52,11 @@
 
 
 import Replicate from "replicate";
+import dotenv from "dotenv";
+
+
+dotenv.config();
+
 
 // Init Replicate client
 const replicate = new Replicate({
