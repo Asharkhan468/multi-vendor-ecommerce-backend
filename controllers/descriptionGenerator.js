@@ -15,7 +15,7 @@ const imageToTextController = async (req, res) => {
         .json({ success: false, error: "Cloudinary URL not found" });
 
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base",
+      "https://router.huggingface.co/models/Salesforce/blip-image-captioning-base",
       {
         method: "POST",
         headers: {
