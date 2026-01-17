@@ -5,6 +5,6 @@ const {
 } = require("../controllers/descriptionGenerator");
 
 const router = express.Router();
-router.post("/image-to-text", parser.single("image"), imageToTextController);
+router.post("/generateCaption", parser.single("image"), imageToTextController);
 
 module.exports = router;

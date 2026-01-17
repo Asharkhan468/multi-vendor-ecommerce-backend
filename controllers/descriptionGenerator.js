@@ -1,32 +1,39 @@
-
 const imageToTextController = async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
+    if (!req.file || !req.file.buffer) {
       return res.status(400).json({ error: "Image upload failed" });
     }
 
-    const imageUrl = req.file.path;
+    // Convert image to base64
+    const base64Image = req.file.buffer.toString("base64");
 
+    // Gemini API call using fetch
     const response = await fetch(
-      "https://devashar235-image-caption-generator.hf.space/run/predict",
+      "https://api.generativelanguage.googleapis.com/v1beta2/models/gemini-3-flash:generate",
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.GEMINI_API_KEY}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          data: [imageUrl],
-        }),
+          prompt: [
+            {
+              image: { imageBytes: base64Image },
+              text: "Describe this image in one short, catchy caption"
+            }
+          ]
+        })
       }
     );
 
-    const result = await response.json();
+    const data = await response.json();
 
-    res.status(200).json({
-      caption: result.data[0],
-    });
+    const caption = data.candidates[0].content;
+
+    res.status(200).json({ caption });
   } catch (error) {
-    console.error("HF Gradio Error:", error);
+    console.error("Gemini API Error:", error.message);
     res.status(500).json({ error: "Image caption failed" });
   }
 };
