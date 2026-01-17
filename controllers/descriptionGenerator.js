@@ -2,12 +2,11 @@ const fetch = require("node-fetch");
 
 const imageToTextController = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "Image is required" });
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ error: "Image upload failed" });
     }
 
-    // Convert image buffer → base64
-    const base64Image = req.file.buffer.toString("base64");
+    const imageUrl = req.file.path;
 
     const response = await fetch(
       "https://devashar235-image-caption-generator.hf.space/run/predict",
@@ -17,22 +16,18 @@ const imageToTextController = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          data: [
-            `data:${req.file.mimetype};base64,${base64Image}`
-          ]
+          data: [imageUrl],
         }),
       }
     );
 
     const result = await response.json();
 
-    // Gradio response format
     res.status(200).json({
       caption: result.data[0],
     });
-
   } catch (error) {
-    console.error("Gradio call error:", error);
+    console.error("HF Gradio Error:", error);
     res.status(500).json({ error: "Image caption failed" });
   }
 };
