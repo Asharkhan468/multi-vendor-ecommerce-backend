@@ -1,3 +1,8 @@
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+
 const imageToTextController = async (req, res) => {
   try {
     if (!req.file || !req.file.path) {
@@ -24,7 +29,7 @@ const imageToTextController = async (req, res) => {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer YOUR_GEMINI_API_KEY`,
+          Authorization: `Bearer ${process.env.GEMINI_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
