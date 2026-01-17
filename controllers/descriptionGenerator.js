@@ -56,7 +56,7 @@ const imageToTextController = async (req, res) => {
     res.status(200).json({ caption });
   } catch (error) {
     console.error("Gemini API Error:", error.message);
-    res.status(500).json({ error: "Image caption failed" });
+    res.status(500).json({ error: error.message });
   }
 };
 
