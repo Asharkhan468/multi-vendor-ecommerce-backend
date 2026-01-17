@@ -2,25 +2,23 @@ require("dotenv").config();
 
 const imageToTextController = async (req, res) => {
   try {
-    if (!req.file || !req.file.secure_url) {
+    if (!req.file || !req.file.path) {
       return res.status(400).json({ error: "Image upload failed" });
     }
 
-    // Cloudinary secure URL
-    const imageUrl = req.file.secure_url;
+    // Use path from Cloudinary
+    const imageUrl = req.file.path;
 
-    // Fetch image bytes from Cloudinary
+    // Fetch image bytes from Cloudinary URL
     const imageResponse = await fetch(imageUrl);
     if (!imageResponse.ok) {
-      return res
-        .status(400)
-        .json({ error: "Failed to fetch image from Cloudinary" });
+      return res.status(400).json({ error: "Failed to fetch image from Cloudinary" });
     }
 
     const arrayBuffer = await imageResponse.arrayBuffer();
     const base64Image = Buffer.from(arrayBuffer).toString("base64");
 
-    // Gemini API call (docs compliant)
+    // Gemini API call
     const geminiResponse = await fetch(
       "https://generativelanguage.googleapis.com/v1beta2/models/gemini-3-flash-preview:generateContent",
       {
@@ -44,9 +42,7 @@ const imageToTextController = async (req, res) => {
 
     if (!geminiResponse.ok) {
       const errText = await geminiResponse.text();
-      return res
-        .status(500)
-        .json({ error: "Gemini API error", details: errText });
+      return res.status(500).json({ error: "Gemini API error", details: errText });
     }
 
     const data = await geminiResponse.json();
@@ -58,5 +54,3 @@ const imageToTextController = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-module.exports = { imageToTextController };
