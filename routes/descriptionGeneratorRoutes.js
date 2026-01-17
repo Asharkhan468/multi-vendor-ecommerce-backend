@@ -1,27 +1,13 @@
-// // routes/descriptionRoutes.js
-// const express = require("express");
-// const parser = require("../config/multer"); // Cloudinary Multer setup
-// const { imageToTextController } = require("../controllers/descriptionGenerator");
-
-// const router = express.Router();
-
-// // POST /api/imageToText
-// router.post("/imageToText", parser.single("image"), imageToTextController);
-
-// module.exports = router;
-
 const express = require("express");
-const parser = require("../config/multer"); // Cloudinary Multer setup
-
-const {
-  imageToTextController,
-} = require("../controllers/descriptionGenerator");
+const parser = require("../config/multer");
+const { imageCaptionController } = require("../controllers/descriptionGenerator");
 
 const router = express.Router();
 
+router.post(
+  "/imageToText",
+  parser.single("image"),
+  imageCaptionController
+);
 
-
-// POST /api/image-to-text
-router.post("/image-to-text", parser.single("image"), imageToTextController);
-
-module.exports= router
+module.exports = router;

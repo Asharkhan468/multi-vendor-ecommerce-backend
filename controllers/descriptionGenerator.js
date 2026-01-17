@@ -1,35 +1,34 @@
-import { pipeline } from "@xenova/transformers";
-import fs from "fs";
+const { Client } = require("@gradio/client");
+const fetch = require("node-fetch");
 
-let captioner;
-
-async function loadModel() {
-  if (!captioner) {
-    captioner = await pipeline(
-      "image-to-text",
-      "Xenova/vit-gpt2-image-captioning"
-    );
-  }
-}
-
-export const imageToTextController = async (req, res) => {
+const imageCaptionController = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "Image required" });
+      return res.status(400).json({ error: "Image is required" });
     }
 
-    await loadModel();
+    // Convert buffer → Blob
+    const blob = new Blob([req.file.buffer], {
+      type: req.file.mimetype,
+    });
 
-    const imageBuffer = fs.readFileSync(req.file.path);
+    // Connect to your HF Space
+    const client = await Client.connect(
+      "https://devashar235-image-caption-generator.hf.space/"
+    );
 
-    const result = await captioner(imageBuffer);
+    // Call FastAPI / Gradio endpoint
+    const result = await client.predict("/generate_caption", {
+      image: blob,
+    });
 
-    res.json({
-      success: true,
-      caption: result[0].generated_text,
+    res.status(200).json({
+      caption: result.data,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "AI failed" });
+    console.error("HF Space Error:", error);
+    res.status(500).json({ error: "Image caption generation failed" });
   }
 };
+
+module.exports = { imageCaptionController };
