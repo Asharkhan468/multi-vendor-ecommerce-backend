@@ -1,18 +1,15 @@
-const dotenv = require("dotenv");
-
-dotenv.config();
-
+require("dotenv").config();
 
 const imageToTextController = async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
+    if (!req.file || !req.file.secure_url) {
       return res.status(400).json({ error: "Image upload failed" });
     }
 
-    // Cloudinary image URL
-    const imageUrl = req.file.path; // ya req.file.secure_url
+    // Cloudinary secure URL
+    const imageUrl = req.file.secure_url;
 
-    // Fetch image bytes from Cloudinary URL
+    // Fetch image bytes from Cloudinary
     const imageResponse = await fetch(imageUrl);
     if (!imageResponse.ok) {
       return res
@@ -23,9 +20,9 @@ const imageToTextController = async (req, res) => {
     const arrayBuffer = await imageResponse.arrayBuffer();
     const base64Image = Buffer.from(arrayBuffer).toString("base64");
 
-    // Gemini API call using fetch
+    // Gemini API call (docs compliant)
     const geminiResponse = await fetch(
-      "https://api.generativelanguage.googleapis.com/v1beta2/models/gemini-3-flash:generate",
+      "https://generativelanguage.googleapis.com/v1beta2/models/gemini-3-flash-preview:generateContent",
       {
         method: "POST",
         headers: {
@@ -39,6 +36,8 @@ const imageToTextController = async (req, res) => {
               text: "Describe this image in one short, catchy caption",
             },
           ],
+          temperature: 0.5,
+          candidateCount: 1,
         }),
       }
     );
