@@ -1,34 +1,40 @@
-const { Client } = require("@gradio/client");
 const fetch = require("node-fetch");
 
-const imageCaptionController = async (req, res) => {
+const imageToTextController = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Image is required" });
     }
 
-    // Convert buffer → Blob
-    const blob = new Blob([req.file.buffer], {
-      type: req.file.mimetype,
-    });
+    // Convert image buffer → base64
+    const base64Image = req.file.buffer.toString("base64");
 
-    // Connect to your HF Space
-    const client = await Client.connect(
-      "https://devashar235-image-caption-generator.hf.space/"
+    const response = await fetch(
+      "https://devashar235-image-caption-generator.hf.space/run/predict",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: [
+            `data:${req.file.mimetype};base64,${base64Image}`
+          ]
+        }),
+      }
     );
 
-    // Call FastAPI / Gradio endpoint
-    const result = await client.predict("/generate_caption", {
-      image: blob,
+    const result = await response.json();
+
+    // Gradio response format
+    res.status(200).json({
+      caption: result.data[0],
     });
 
-    res.status(200).json({
-      caption: result.data,
-    });
   } catch (error) {
-    console.error("HF Space Error:", error);
-    res.status(500).json({ error: "Image caption generation failed" });
+    console.error("Gradio call error:", error);
+    res.status(500).json({ error: "Image caption failed" });
   }
 };
 
-module.exports = { imageCaptionController };
+module.exports = { imageToTextController };
