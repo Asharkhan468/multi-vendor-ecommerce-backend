@@ -19,7 +19,7 @@ const imageToTextController = async (req, res) => {
 
     console.log("Sending image to FastAPI...");
 
-    const aiRes = await fetch("http://127.0.0.1:8000/upload-image", {
+    const aiRes = await fetch("https://devAshar235-image-caption.hf.space/upload-image", {
       method: "POST",
       body: formData,
     });
