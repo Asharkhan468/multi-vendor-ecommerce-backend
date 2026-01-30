@@ -10,19 +10,18 @@ const categoriesRoutes = require("./routes/categoriesRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoute");
 const blockUser = require("./routes/accountBlockRoutes");
-const deleteUser= require("./routes/deleteUserRoute");
-const aiContentGenerate= require("./routes/descriptionGeneratorRoutes");
-
+const deleteUser = require("./routes/deleteUserRoute");
+const aiContentGenerate = require("./routes/descriptionGeneratorRoutes");
 
 const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000" , "https://multi-vendor-ecommerce-mauve.vercel.app/"],
+    origin: ["https://multi-vendor-ecommerce-mauve.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -34,10 +33,10 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/auth", logoutRoutes);
-app.use("/api" , userRoutes);
-app.use("/api" , blockUser);
-app.use("/api/users" , deleteUser);
-app.use("/api" , aiContentGenerate);
+app.use("/api", userRoutes);
+app.use("/api", blockUser);
+app.use("/api/users", deleteUser);
+app.use("/api", aiContentGenerate);
 
 // 🔥 MongoDB connection (safe for serverless)
 let isConnected = false;
