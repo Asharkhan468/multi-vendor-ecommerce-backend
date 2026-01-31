@@ -17,7 +17,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://multi-vendor-ecommerce-mauve.vercel.app"],
+    origin: ["https://multi-vendor-ecommerce-mauve.vercel.app" , "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
