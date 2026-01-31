@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 
-
 const reviewSchema = new mongoose.Schema({
   userName: { type: String, required: true },
-  userPhoto: { type: String }, // URL ya base64
+  userPhoto: { type: String, required: true },
   rating: { type: Number, required: true, min: 1, max: 5 },
   comment: { type: String, required: true },
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
 });
 
 const productSchema = new mongoose.Schema(
@@ -40,10 +39,9 @@ const productSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    reviews:[reviewSchema],
-
+    reviews: [reviewSchema],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Product", productSchema);
