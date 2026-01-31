@@ -25,16 +25,4 @@ exports.addReview = async (req, res) => {
   }
 };
 
-exports.getReviews = async (req, res) => {
-  const { id } = req.params;
 
-  try {
-    const product = await Product.findById(id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
-    res.status(200).json({ reviews: product.reviews });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
