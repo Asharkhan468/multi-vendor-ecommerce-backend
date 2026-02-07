@@ -39,6 +39,8 @@ const productSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    priceStatus: "normal" | "high" | "low",
+
 
     reviews: [reviewSchema],
   },
