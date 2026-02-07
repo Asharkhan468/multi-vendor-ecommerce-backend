@@ -47,23 +47,45 @@ const createOrder = async (req, res) => {
     // 🔹 Step 2: Create order per vendor
 
     for (let p of products) {
-      const product = await Product.findOneAndUpdate(
-        {
-          _id: p.productId,
-          stock: { $gte: quantity }, // stock check inside query
-        },
-        {
-          $inc: { stock: -quantity }, // decrement stock
-        },
-        { new: true },
-      );
+     for (let p of products) {
 
-      if (!product) {
-        return res.status(400).json({
-          success: false,
-          message: "Product out of stock",
-        });
-      }
+  const quantity = p.quantity && p.quantity > 0 ? p.quantity : 1;
+
+  // 🔥 Atomic stock check + decrement
+  const product = await Product.findOneAndUpdate(
+    {
+      _id: p.productId,
+      stock: { $gte: quantity }, // ensure enough stock
+    },
+    {
+      $inc: { stock: -quantity }, // reduce stock safely
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!product) {
+    return res.status(400).json({
+      success: false,
+      message: "Product not found or insufficient stock",
+    });
+  }
+
+  const vendorId = product.createdBy.toString();
+
+  if (!vendorMap[vendorId]) {
+    vendorMap[vendorId] = [];
+  }
+
+  vendorMap[vendorId].push({
+    productId: product._id,
+    title: product.title,
+    price: product.price,
+    quantity,
+  });
+}
+
     }
 
     const createdOrders = [];
