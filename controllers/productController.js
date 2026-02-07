@@ -55,7 +55,9 @@ const createProduct = async (req, res) => {
       });
     }
 
-    // 🔎 Step 1: Same product find karo (dusre vendors ka)
+    let priceStatus = "normal";
+
+    // Same product dusre vendors ka
     const sameProducts = await Product.find({
       title: title.trim(),
       category,
@@ -72,35 +74,20 @@ const createProduct = async (req, res) => {
       const percentageDifference =
         ((price - avgPrice) / avgPrice) * 100;
 
-      // 🚨 15% rule
       if (percentageDifference > 15) {
-        return res.status(400).json({
-          success: false,
-          message: `⚠️ Price is ${percentageDifference.toFixed(
-            1
-          )}% higher than market average (${avgPrice.toFixed(0)})`,
-        });
-      }
-
-      if (percentageDifference < -15) {
-        return res.status(400).json({
-          success: false,
-          message: `⚠️ Price is ${Math.abs(
-            percentageDifference
-          ).toFixed(
-            1
-          )}% lower than market average (${avgPrice.toFixed(0)})`,
-        });
+        priceStatus = "high";
+      } else if (percentageDifference < -15) {
+        priceStatus = "low";
       }
     }
 
-    // ✅ Agar sab safe hai to create
     const newProduct = await Product.create({
       title,
       description,
       price,
       category,
       stock,
+      priceStatus, // 👈 save this
       image: {
         url: req.file.path,
         public_id: req.file.filename,
@@ -121,6 +108,7 @@ const createProduct = async (req, res) => {
     });
   }
 };
+
 
 
 // Get all products
