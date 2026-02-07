@@ -2,16 +2,99 @@ const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
 // Create Product
+// const createProduct = async (req, res) => {
+//   try {
+//     const { title, description, price, category, stock } = req.body;
+
+//     if (!req.file) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Image is required" });
+//     }
+
+//     const newProduct = await Product.create({
+//       title,
+//       description,
+//       price,
+//       category,
+//       stock,
+//       image: {
+//         url: req.file.path,
+//         public_id: req.file.filename,
+//       },
+//       createdBy: req.user._id,
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       product: {
+//         _id: newProduct._id,
+//         title: newProduct.title,
+//         description: newProduct.description,
+//         price: newProduct.price,
+//         category: newProduct.category,
+//         image: newProduct.image,
+//         stock: newProduct.stock,
+//         createdAt: newProduct.createdAt,
+//       },
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
 const createProduct = async (req, res) => {
   try {
     const { title, description, price, category, stock } = req.body;
 
     if (!req.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Image is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Image is required",
+      });
     }
 
+    // 🔎 Step 1: Same product find karo (dusre vendors ka)
+    const sameProducts = await Product.find({
+      title: title.trim(),
+      category,
+    });
+
+    if (sameProducts.length > 0) {
+      const totalPrice = sameProducts.reduce(
+        (sum, product) => sum + product.price,
+        0
+      );
+
+      const avgPrice = totalPrice / sameProducts.length;
+
+      const percentageDifference =
+        ((price - avgPrice) / avgPrice) * 100;
+
+      // 🚨 15% rule
+      if (percentageDifference > 15) {
+        return res.status(400).json({
+          success: false,
+          message: `⚠️ Price is ${percentageDifference.toFixed(
+            1
+          )}% higher than market average (${avgPrice.toFixed(0)})`,
+        });
+      }
+
+      if (percentageDifference < -15) {
+        return res.status(400).json({
+          success: false,
+          message: `⚠️ Price is ${Math.abs(
+            percentageDifference
+          ).toFixed(
+            1
+          )}% lower than market average (${avgPrice.toFixed(0)})`,
+        });
+      }
+    }
+
+    // ✅ Agar sab safe hai to create
     const newProduct = await Product.create({
       title,
       description,
@@ -27,22 +110,18 @@ const createProduct = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      product: {
-        _id: newProduct._id,
-        title: newProduct.title,
-        description: newProduct.description,
-        price: newProduct.price,
-        category: newProduct.category,
-        image: newProduct.image,
-        stock: newProduct.stock,
-        createdAt: newProduct.createdAt,
-      },
+      product: newProduct,
     });
+
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
+
 
 // Get all products
 const getAllProducts = async (req, res) => {
