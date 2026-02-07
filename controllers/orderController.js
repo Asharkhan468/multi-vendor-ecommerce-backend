@@ -20,31 +20,52 @@ const createOrder = async (req, res) => {
 
     const vendorMap = {};
 
-    for (let p of products) {
-      const product = await Product.findById(p.productId);
+    // for (let p of products) {
+    //   const product = await Product.findById(p.productId);
 
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: "Product not found",
-        });
-      }
+    //   if (!product) {
+    //     return res.status(404).json({
+    //       success: false,
+    //       message: "Product not found",
+    //     });
+    //   }
 
-      const vendorId = product.createdBy.toString();
+    //   const vendorId = product.createdBy.toString();
 
-      if (!vendorMap[vendorId]) {
-        vendorMap[vendorId] = [];
-      }
+    //   if (!vendorMap[vendorId]) {
+    //     vendorMap[vendorId] = [];
+    //   }
 
-      vendorMap[vendorId].push({
-        productId: product._id,
-        title: product.title,
-        price: product.price,
-        quantity: p.quantity || 1,
-      });
-    }
+    //   vendorMap[vendorId].push({
+    //     productId: product._id,
+    //     title: product.title,
+    //     price: product.price,
+    //     quantity: p.quantity || 1,
+    //   });
+    // }
 
     // 🔹 Step 2: Create order per vendor
+
+    for (let p of products) {
+      const product = await Product.findOneAndUpdate(
+        {
+          _id: p.productId,
+          stock: { $gte: quantity }, // stock check inside query
+        },
+        {
+          $inc: { stock: -quantity }, // decrement stock
+        },
+        { new: true },
+      );
+
+      if (!product) {
+        return res.status(400).json({
+          success: false,
+          message: "Product out of stock",
+        });
+      }
+    }
+
     const createdOrders = [];
 
     for (const vendorId in vendorMap) {
@@ -52,7 +73,7 @@ const createOrder = async (req, res) => {
 
       const totalAmount = vendorProducts.reduce(
         (sum, item) => sum + item.price * item.quantity,
-        0
+        0,
       );
 
       const order = await Order.create({
@@ -122,7 +143,7 @@ const updateOrderStatus = async (req, res) => {
         vendor: req.user._id,
       },
       { status },
-      { new: true }
+      { new: true },
     );
 
     if (!order) {
