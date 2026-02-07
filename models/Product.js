@@ -39,8 +39,11 @@ const productSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    priceStatus: "normal" | "high" | "low",
-
+    priceStatus: {
+      type: String,
+      enum: ["normal", "high", "low"],
+      default: "normal",
+    },
 
     reviews: [reviewSchema],
   },
